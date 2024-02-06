@@ -1,0 +1,15 @@
+type XStakingPool @entity {
+  id: Bytes!
+  address: Bytes! # address
+  deployer: Bytes! # address 
+  poolId: BigInt! # uint256
+  tokens: [Bytes!]! # address[]
+  allocations: [BigInt!]! # uint256
+}
+
+type TokensAmounts @entity {
+  id: ID!
+  timestamp: BigInt!
+  tokens: [Bytes!]! # address[]
+  tokenAmounts: [BigInt!]! # uint256[]
+}

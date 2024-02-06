@@ -1,0 +1,43 @@
+specVersion: 1.0.0
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: XStakingFactory
+    network: matic
+    source:
+      address: "0xFb028d25bB919Bd484856C1c04D95239f8aa47b5"
+      abi: XStakingFactory
+      startBlock: 52740750
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - XStakingPool
+      abis:
+        - name: XStakingFactory
+          file: XStakingFactory/abis/XStakingFactory.json
+      eventHandlers:
+        - event: DeployPool(address,address,uint256,address[],uint256[])
+          handler: handleDeployPool
+      file: XStakingFactory/XStakingFactory.wasm
+templates:
+  - kind: ethereum
+    name: XStakingPool
+    network: matic
+    source:
+      abi: XStakingPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - TokensAmounts
+      abis:
+        - name: XStakingPool
+          file: XStakingPool/abis/XStakingPool.json
+      eventHandlers:
+        - event: TokensAmounts(address[],uint256[])
+          handler: handleTokensAmounts
+      file: templates/XStakingPool/XStakingPool.wasm
