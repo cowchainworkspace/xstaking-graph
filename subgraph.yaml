@@ -1,31 +1,3 @@
-# specVersion: 1.0.0
-# indexerHints:
-#   prune: auto
-# schema:
-#   file: ./schema.graphql
-# dataSources:
-#   - kind: ethereum
-#     name: XStakingFactory
-#     network: matic
-#     source:
-#       address: "0xFb028d25bB919Bd484856C1c04D95239f8aa47b5"
-#       abi: XStakingFactory
-#       startBlock: 52740750
-#     mapping:
-#       kind: ethereum/events
-#       apiVersion: 0.0.7
-#       language: wasm/assemblyscript
-#       entities:
-#         - DeployPool
-#       abis:
-#         - name: XStakingFactory
-#           file: ./abis/XStakingFactory.json
-#       eventHandlers:
-#         - event: DeployPool(address,address,uint256,address[],uint256[])
-#           handler: handleDeployPool
-#       file: ./src/x-staking-factory.ts
-
-
 specVersion: 1.0.0
 schema:
   file: ./schema.graphql
@@ -34,9 +6,9 @@ dataSources:
     name: XStakingFactory
     network: matic
     source:
-      address: '0xFb028d25bB919Bd484856C1c04D95239f8aa47b5'
+      address: '0x2ee89Fce7d4C9D7096641CB635d4612F77a5Fe84'
       abi: XStakingFactory
-      startBlock: 52740750
+      startBlock: 53274660
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -63,10 +35,17 @@ templates:
       language: wasm/assemblyscript
       entities:
         - TokensAmounts
+        - TokenInfo
       abis:
         - name: XStakingPool
           file: ./abis/XStakingPool.json
+        - name: IToken
+          file: ./abis/IToken.json
       eventHandlers:
         - event: TokensAmounts(address[],uint256[])
           handler: handleTokensAmounts
+        - event: TokenSwap(address,uint256,uint256)
+          handler: handleTokenSwap
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
       file: ./src/x-staking-pool.ts

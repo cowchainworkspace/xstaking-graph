@@ -98,6 +98,32 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class TokenSwap extends ethereum.Event {
+  get params(): TokenSwap__Params {
+    return new TokenSwap__Params(this);
+  }
+}
+
+export class TokenSwap__Params {
+  _event: TokenSwap;
+
+  constructor(event: TokenSwap) {
+    this._event = event;
+  }
+
+  get token(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get tokenAmount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get baseTokenAmount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class TokensAmounts extends ethereum.Event {
   get params(): TokensAmounts__Params {
     return new TokensAmounts__Params(this);
@@ -345,11 +371,15 @@ export class XStakingPool extends ethereum.SmartContract {
 
   calcBaseTokenAllocationForDeposit(
     baseTokenAmount: BigInt,
+    useXBR: boolean,
   ): XStakingPool__calcBaseTokenAllocationForDepositResult {
     let result = super.call(
       "calcBaseTokenAllocationForDeposit",
-      "calcBaseTokenAllocationForDeposit(uint256):(uint256[],uint256)",
-      [ethereum.Value.fromUnsignedBigInt(baseTokenAmount)],
+      "calcBaseTokenAllocationForDeposit(uint256,bool):(uint256[],uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromBoolean(useXBR),
+      ],
     );
 
     return new XStakingPool__calcBaseTokenAllocationForDepositResult(
@@ -360,11 +390,15 @@ export class XStakingPool extends ethereum.SmartContract {
 
   try_calcBaseTokenAllocationForDeposit(
     baseTokenAmount: BigInt,
+    useXBR: boolean,
   ): ethereum.CallResult<XStakingPool__calcBaseTokenAllocationForDepositResult> {
     let result = super.tryCall(
       "calcBaseTokenAllocationForDeposit",
-      "calcBaseTokenAllocationForDeposit(uint256):(uint256[],uint256)",
-      [ethereum.Value.fromUnsignedBigInt(baseTokenAmount)],
+      "calcBaseTokenAllocationForDeposit(uint256,bool):(uint256[],uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromBoolean(useXBR),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -466,38 +500,6 @@ export class XStakingPool extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  execOneInchSwap(oneInchRouter: Address, oneInchSwapData: Bytes): BigInt {
-    let result = super.call(
-      "execOneInchSwap",
-      "execOneInchSwap(address,bytes):(uint256)",
-      [
-        ethereum.Value.fromAddress(oneInchRouter),
-        ethereum.Value.fromBytes(oneInchSwapData),
-      ],
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_execOneInchSwap(
-    oneInchRouter: Address,
-    oneInchSwapData: Bytes,
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "execOneInchSwap",
-      "execOneInchSwap(address,bytes):(uint256)",
-      [
-        ethereum.Value.fromAddress(oneInchRouter),
-        ethereum.Value.fromBytes(oneInchSwapData),
       ],
     );
     if (result.reverted) {
@@ -1051,44 +1053,6 @@ export class DepositToCall__Outputs {
   }
 }
 
-export class ExecOneInchSwapCall extends ethereum.Call {
-  get inputs(): ExecOneInchSwapCall__Inputs {
-    return new ExecOneInchSwapCall__Inputs(this);
-  }
-
-  get outputs(): ExecOneInchSwapCall__Outputs {
-    return new ExecOneInchSwapCall__Outputs(this);
-  }
-}
-
-export class ExecOneInchSwapCall__Inputs {
-  _call: ExecOneInchSwapCall;
-
-  constructor(call: ExecOneInchSwapCall) {
-    this._call = call;
-  }
-
-  get oneInchRouter(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get oneInchSwapData(): Bytes {
-    return this._call.inputValues[1].value.toBytes();
-  }
-}
-
-export class ExecOneInchSwapCall__Outputs {
-  _call: ExecOneInchSwapCall;
-
-  constructor(call: ExecOneInchSwapCall) {
-    this._call = call;
-  }
-
-  get value0(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
-  }
-}
-
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -1124,6 +1088,14 @@ export class InitializeCall__Inputs {
 
   get _profitSharingFeeNumerator(): BigInt {
     return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get _tokensAmounts(): Array<BigInt> {
+    return this._call.inputValues[5].value.toBigIntArray();
+  }
+
+  get initialBaseTokenAmount(): BigInt {
+    return this._call.inputValues[6].value.toBigInt();
   }
 }
 

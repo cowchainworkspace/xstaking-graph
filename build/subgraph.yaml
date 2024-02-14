@@ -6,9 +6,9 @@ dataSources:
     name: XStakingFactory
     network: matic
     source:
-      address: "0xFb028d25bB919Bd484856C1c04D95239f8aa47b5"
+      address: "0x2ee89Fce7d4C9D7096641CB635d4612F77a5Fe84"
       abi: XStakingFactory
-      startBlock: 52740750
+      startBlock: 53274660
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -34,10 +34,17 @@ templates:
       language: wasm/assemblyscript
       entities:
         - TokensAmounts
+        - TokenInfo
       abis:
         - name: XStakingPool
           file: XStakingPool/abis/XStakingPool.json
+        - name: IToken
+          file: XStakingPool/abis/IToken.json
       eventHandlers:
         - event: TokensAmounts(address[],uint256[])
           handler: handleTokensAmounts
+        - event: TokenSwap(address,uint256,uint256)
+          handler: handleTokenSwap
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
       file: templates/XStakingPool/XStakingPool.wasm

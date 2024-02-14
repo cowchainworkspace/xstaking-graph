@@ -236,6 +236,31 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "baseTokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokenSwap",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address[]",
         "name": "tokens",
         "type": "address[]"
@@ -411,6 +436,11 @@
         "internalType": "uint256",
         "name": "baseTokenAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "useXBR",
+        "type": "bool"
       }
     ],
     "name": "calcBaseTokenAllocationForDeposit",
@@ -506,30 +536,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "oneInchRouter",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "oneInchSwapData",
-        "type": "bytes"
-      }
-    ],
-    "name": "execOneInchSwap",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getTokensAndAllocation",
     "outputs": [
@@ -572,6 +578,16 @@
       {
         "internalType": "uint256",
         "name": "_profitSharingFeeNumerator",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_tokensAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "initialBaseTokenAmount",
         "type": "uint256"
       }
     ],

@@ -12,9 +12,9 @@ import {
 } from "@graphprotocol/graph-ts";
 
 export class XStakingPool extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -22,40 +22,38 @@ export class XStakingPool extends Entity {
     assert(id != null, "Cannot save XStakingPool entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type XStakingPool must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type XStakingPool must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("XStakingPool", id.toBytes().toHexString(), this);
+      store.set("XStakingPool", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): XStakingPool | null {
+  static loadInBlock(id: string): XStakingPool | null {
     return changetype<XStakingPool | null>(
-      store.get_in_block("XStakingPool", id.toHexString()),
+      store.get_in_block("XStakingPool", id),
     );
   }
 
-  static load(id: Bytes): XStakingPool | null {
-    return changetype<XStakingPool | null>(
-      store.get("XStakingPool", id.toHexString()),
-    );
+  static load(id: string): XStakingPool | null {
+    return changetype<XStakingPool | null>(store.get("XStakingPool", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
-  get address(): Bytes {
-    let value = this.get("address");
+  get poolAddress(): Bytes {
+    let value = this.get("poolAddress");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -63,12 +61,12 @@ export class XStakingPool extends Entity {
     }
   }
 
-  set address(value: Bytes) {
-    this.set("address", Value.fromBytes(value));
+  set poolAddress(value: Bytes) {
+    this.set("poolAddress", Value.fromBytes(value));
   }
 
-  get deployer(): Bytes {
-    let value = this.get("deployer");
+  get poolDeployer(): Bytes {
+    let value = this.get("poolDeployer");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -76,8 +74,8 @@ export class XStakingPool extends Entity {
     }
   }
 
-  set deployer(value: Bytes) {
-    this.set("deployer", Value.fromBytes(value));
+  set poolDeployer(value: Bytes) {
+    this.set("poolDeployer", Value.fromBytes(value));
   }
 
   get poolId(): BigInt {
@@ -198,5 +196,202 @@ export class TokensAmounts extends Entity {
 
   set tokenAmounts(value: Array<BigInt>) {
     this.set("tokenAmounts", Value.fromBigIntArray(value));
+  }
+}
+
+export class TokenInfo extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save TokenInfo entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type TokenInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("TokenInfo", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): TokenInfo | null {
+    return changetype<TokenInfo | null>(store.get_in_block("TokenInfo", id));
+  }
+
+  static load(id: string): TokenInfo | null {
+    return changetype<TokenInfo | null>(store.get("TokenInfo", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get token(): Bytes {
+    let value = this.get("token");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set token(value: Bytes) {
+    this.set("token", Value.fromBytes(value));
+  }
+
+  get tokenName(): string {
+    let value = this.get("tokenName");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tokenName(value: string) {
+    this.set("tokenName", Value.fromString(value));
+  }
+
+  get tokenSymbol(): string {
+    let value = this.get("tokenSymbol");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tokenSymbol(value: string) {
+    this.set("tokenSymbol", Value.fromString(value));
+  }
+
+  get tokenDecimals(): BigInt {
+    let value = this.get("tokenDecimals");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set tokenDecimals(value: BigInt) {
+    this.set("tokenDecimals", Value.fromBigInt(value));
+  }
+
+  get tokenAmount(): BigInt {
+    let value = this.get("tokenAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set tokenAmount(value: BigInt) {
+    this.set("tokenAmount", Value.fromBigInt(value));
+  }
+
+  get baseTokenAmount(): BigInt {
+    let value = this.get("baseTokenAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set baseTokenAmount(value: BigInt) {
+    this.set("baseTokenAmount", Value.fromBigInt(value));
+  }
+
+  get tokenPrice(): BigDecimal {
+    let value = this.get("tokenPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set tokenPrice(value: BigDecimal) {
+    this.set("tokenPrice", Value.fromBigDecimal(value));
+  }
+}
+
+export class Depositor extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Depositor entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Depositor must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("Depositor", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): Depositor | null {
+    return changetype<Depositor | null>(store.get_in_block("Depositor", id));
+  }
+
+  static load(id: string): Depositor | null {
+    return changetype<Depositor | null>(store.get("Depositor", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get depositor(): Bytes {
+    let value = this.get("depositor");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set depositor(value: Bytes) {
+    this.set("depositor", Value.fromBytes(value));
   }
 }
