@@ -7,7 +7,7 @@ type XStakingPool @entity {
   allocations: [BigInt!]! # uint256
 }
 
-type TokensAmounts @entity {
+type TokensAmount @entity {
   id: ID!
   timestamp: BigInt!
   tokens: [Bytes!]! # address[]
@@ -16,14 +16,17 @@ type TokensAmounts @entity {
 
 type TokenInfo @entity {
   id: ID!
-  timestamp: BigInt! # block.timestamp
-  token: Bytes! # address
+  tokenAddress: Bytes! # address
   tokenName: String! # string
   tokenSymbol: String! # string
-  tokenDecimals: BigInt! #uint8
-  tokenAmount: BigInt! # uint256
-  baseTokenAmount: BigInt! # uint256
-  tokenPrice: BigDecimal! # float
+  tokenDecimals: String! #uint8
+}
+
+type TokenPrice @entity {
+  id: ID!
+  tokenAddress: Bytes!
+  tokenPrice: BigDecimal!
+  timestamp: BigInt!
 }
 
 type Depositor @entity {

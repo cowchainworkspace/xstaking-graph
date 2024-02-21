@@ -36,6 +36,7 @@ templates:
       entities:
         - TokensAmounts
         - TokenInfo
+        - Depositor
       abis:
         - name: XStakingPool
           file: ./abis/XStakingPool.json
