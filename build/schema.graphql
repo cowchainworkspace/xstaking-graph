@@ -7,8 +7,9 @@ type XStakingPool @entity {
   allocations: [BigInt!]! # uint256
 }
 
-type TokensAmount @entity {
+type PoolAmount @entity {
   id: ID!
+  poolAddress: Bytes!
   timestamp: BigInt!
   tokens: [Bytes!]! # address[]
   tokenAmounts: [BigInt!]! # uint256[]

@@ -118,7 +118,7 @@ export class XStakingPool extends Entity {
   }
 }
 
-export class TokensAmount extends Entity {
+export class PoolAmount extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -126,24 +126,22 @@ export class TokensAmount extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save TokensAmount entity without an ID");
+    assert(id != null, "Cannot save PoolAmount entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type TokensAmount must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type PoolAmount must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("TokensAmount", id.toString(), this);
+      store.set("PoolAmount", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): TokensAmount | null {
-    return changetype<TokensAmount | null>(
-      store.get_in_block("TokensAmount", id),
-    );
+  static loadInBlock(id: string): PoolAmount | null {
+    return changetype<PoolAmount | null>(store.get_in_block("PoolAmount", id));
   }
 
-  static load(id: string): TokensAmount | null {
-    return changetype<TokensAmount | null>(store.get("TokensAmount", id));
+  static load(id: string): PoolAmount | null {
+    return changetype<PoolAmount | null>(store.get("PoolAmount", id));
   }
 
   get id(): string {
@@ -157,6 +155,19 @@ export class TokensAmount extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get poolAddress(): Bytes {
+    let value = this.get("poolAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set poolAddress(value: Bytes) {
+    this.set("poolAddress", Value.fromBytes(value));
   }
 
   get timestamp(): BigInt {

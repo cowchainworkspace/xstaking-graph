@@ -7,15 +7,16 @@ import {
 import {
     IToken
 } from '../generated/templates/XStakingPool/IToken'
-import { TokensAmount, TokenInfo, Depositor, TokenPrice } from '../generated/schema'
+import { PoolAmount, TokenInfo, Depositor, TokenPrice } from '../generated/schema'
 
 export function handleTokensAmounts(event: TokensAmountsEvent): void {
     const id = event.address.toHexString() + '-' + event.block.timestamp.toString()
-    let tokensAmountsEntity = new TokensAmount(id)
-    tokensAmountsEntity.timestamp = event.block.timestamp
-    tokensAmountsEntity.tokens = event.params.tokens.map<Bytes>(token => token)
-    tokensAmountsEntity.tokenAmounts = event.params.tokenAmounts
-    tokensAmountsEntity.save()
+    let poolAmountEntity = new PoolAmount(id)
+    poolAmountEntity.poolAddress = event.address
+    poolAmountEntity.timestamp = event.block.timestamp
+    poolAmountEntity.tokens = event.params.tokens.map<Bytes>(token => token)
+    poolAmountEntity.tokenAmounts = event.params.tokenAmounts
+    poolAmountEntity.save()
 }
 // timestamp1
 // {
