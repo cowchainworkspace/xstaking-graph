@@ -74,8 +74,8 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
 
     const rawPrice: BigDecimal = baseTokenAmountBD.div(tokenAmountBD)
     
-
-    let tokenPriceEntity = new TokenPrice(event.block.timestamp.toString())
+    let tokenPriceId = event.params.token.toHexString() + '-' + event.block.timestamp.toString()
+    let tokenPriceEntity = new TokenPrice(tokenPriceId)
     tokenPriceEntity.tokenAddress = event.params.token
     tokenPriceEntity.tokenPrice = rawPrice
     tokenPriceEntity.timestamp = event.block.timestamp
