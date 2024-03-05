@@ -19,7 +19,7 @@ dataSources:
         - name: XStakingFactory
           file: ./abis/XStakingFactory.json
       eventHandlers:
-        - event: DeployPool(address,address,uint256,address[],uint256[])
+        - event: DeployPool(address,address,uint256,address[],uint256[],string)
           handler: handleDeployPool
       file: ./src/x-staking-factory.ts
 
@@ -49,4 +49,10 @@ templates:
           handler: handleTokenSwap
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: Volume(uint256)
+          handler: handleVolume
+        - event: Deposit(address,address,uint256)
+          handler: handleDeposit
+        - event: Withdraw(address,address,uint256)
+          handler: handleWithdraw
       file: ./src/x-staking-pool.ts

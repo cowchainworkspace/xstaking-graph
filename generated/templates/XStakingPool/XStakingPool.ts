@@ -36,6 +36,32 @@ export class Approval__Params {
   }
 }
 
+export class Deposit extends ethereum.Event {
+  get params(): Deposit__Params {
+    return new Deposit__Params(this);
+  }
+}
+
+export class Deposit__Params {
+  _event: Deposit;
+
+  constructor(event: Deposit) {
+    this._event = event;
+  }
+
+  get pool(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get depositor(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -168,6 +194,50 @@ export class Transfer__Params {
   }
 
   get value(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class Volume extends ethereum.Event {
+  get params(): Volume__Params {
+    return new Volume__Params(this);
+  }
+}
+
+export class Volume__Params {
+  _event: Volume;
+
+  constructor(event: Volume) {
+    this._event = event;
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
+export class Withdraw extends ethereum.Event {
+  get params(): Withdraw__Params {
+    return new Withdraw__Params(this);
+  }
+}
+
+export class Withdraw__Params {
+  _event: Withdraw;
+
+  constructor(event: Withdraw) {
+    this._event = event;
+  }
+
+  get pool(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get depositor(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 }

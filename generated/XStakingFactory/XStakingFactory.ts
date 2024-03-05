@@ -42,6 +42,10 @@ export class DeployPool__Params {
   get allocations(): Array<BigInt> {
     return this._event.parameters[4].value.toBigIntArray();
   }
+
+  get description(): string {
+    return this._event.parameters[5].value.toString();
+  }
 }
 
 export class Initialized extends ethereum.Event {
@@ -103,6 +107,31 @@ export class OwnershipTransferred__Params {
 
   get newOwner(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class XStakingFactory__calcBaseTokenAllocationForDeployPoolResult {
+  value0: Array<BigInt>;
+  value1: BigInt;
+
+  constructor(value0: Array<BigInt>, value1: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigIntArray(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    return map;
+  }
+
+  getValue0(): Array<BigInt> {
+    return this.value0;
+  }
+
+  getValue1(): BigInt {
+    return this.value1;
   }
 }
 
@@ -239,18 +268,71 @@ export class XStakingFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  calcBaseTokenAllocationForDeployPool(
+    tokens: Array<Address>,
+    allocations: Array<BigInt>,
+    baseTokenAmount: BigInt,
+  ): XStakingFactory__calcBaseTokenAllocationForDeployPoolResult {
+    let result = super.call(
+      "calcBaseTokenAllocationForDeployPool",
+      "calcBaseTokenAllocationForDeployPool(address[],uint256[],uint256):(uint256[],uint256)",
+      [
+        ethereum.Value.fromAddressArray(tokens),
+        ethereum.Value.fromUnsignedBigIntArray(allocations),
+        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+      ],
+    );
+
+    return new XStakingFactory__calcBaseTokenAllocationForDeployPoolResult(
+      result[0].toBigIntArray(),
+      result[1].toBigInt(),
+    );
+  }
+
+  try_calcBaseTokenAllocationForDeployPool(
+    tokens: Array<Address>,
+    allocations: Array<BigInt>,
+    baseTokenAmount: BigInt,
+  ): ethereum.CallResult<XStakingFactory__calcBaseTokenAllocationForDeployPoolResult> {
+    let result = super.tryCall(
+      "calcBaseTokenAllocationForDeployPool",
+      "calcBaseTokenAllocationForDeployPool(address[],uint256[],uint256):(uint256[],uint256)",
+      [
+        ethereum.Value.fromAddressArray(tokens),
+        ethereum.Value.fromUnsignedBigIntArray(allocations),
+        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new XStakingFactory__calcBaseTokenAllocationForDeployPoolResult(
+        value[0].toBigIntArray(),
+        value[1].toBigInt(),
+      ),
+    );
+  }
+
   deployPool(
     tokens: Array<Address>,
     allocations: Array<BigInt>,
     profitSharingFeeNumerator: BigInt,
+    initialBaseTokenAmount: BigInt,
+    oneInchSwapData: Array<Bytes>,
+    description: string,
   ): Address {
     let result = super.call(
       "deployPool",
-      "deployPool(address[],uint256[],uint256):(address)",
+      "deployPool(address[],uint256[],uint256,uint256,bytes[],string):(address)",
       [
         ethereum.Value.fromAddressArray(tokens),
         ethereum.Value.fromUnsignedBigIntArray(allocations),
         ethereum.Value.fromUnsignedBigInt(profitSharingFeeNumerator),
+        ethereum.Value.fromUnsignedBigInt(initialBaseTokenAmount),
+        ethereum.Value.fromBytesArray(oneInchSwapData),
+        ethereum.Value.fromString(description),
       ],
     );
 
@@ -261,14 +343,20 @@ export class XStakingFactory extends ethereum.SmartContract {
     tokens: Array<Address>,
     allocations: Array<BigInt>,
     profitSharingFeeNumerator: BigInt,
+    initialBaseTokenAmount: BigInt,
+    oneInchSwapData: Array<Bytes>,
+    description: string,
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "deployPool",
-      "deployPool(address[],uint256[],uint256):(address)",
+      "deployPool(address[],uint256[],uint256,uint256,bytes[],string):(address)",
       [
         ethereum.Value.fromAddressArray(tokens),
         ethereum.Value.fromUnsignedBigIntArray(allocations),
         ethereum.Value.fromUnsignedBigInt(profitSharingFeeNumerator),
+        ethereum.Value.fromUnsignedBigInt(initialBaseTokenAmount),
+        ethereum.Value.fromBytesArray(oneInchSwapData),
+        ethereum.Value.fromString(description),
       ],
     );
     if (result.reverted) {
@@ -338,6 +426,31 @@ export class XStakingFactory extends ethereum.SmartContract {
         value[1].toBigInt(),
       ),
     );
+  }
+
+  getTotalBaseTokenForDeployPool(baseTokenAmount: BigInt): BigInt {
+    let result = super.call(
+      "getTotalBaseTokenForDeployPool",
+      "getTotalBaseTokenForDeployPool(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(baseTokenAmount)],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getTotalBaseTokenForDeployPool(
+    baseTokenAmount: BigInt,
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getTotalBaseTokenForDeployPool",
+      "getTotalBaseTokenForDeployPool(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(baseTokenAmount)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   getUnstakingFee(): XStakingFactory__getUnstakingFeeResult {
@@ -683,6 +796,18 @@ export class DeployPoolCall__Inputs {
   get profitSharingFeeNumerator(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
   }
+
+  get initialBaseTokenAmount(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get oneInchSwapData(): Array<Bytes> {
+    return this._call.inputValues[4].value.toBytesArray();
+  }
+
+  get description(): string {
+    return this._call.inputValues[5].value.toString();
+  }
 }
 
 export class DeployPoolCall__Outputs {
@@ -889,6 +1014,36 @@ export class SetXBRTokenCall__Outputs {
   _call: SetXBRTokenCall;
 
   constructor(call: SetXBRTokenCall) {
+    this._call = call;
+  }
+}
+
+export class SweepCall extends ethereum.Call {
+  get inputs(): SweepCall__Inputs {
+    return new SweepCall__Inputs(this);
+  }
+
+  get outputs(): SweepCall__Outputs {
+    return new SweepCall__Outputs(this);
+  }
+}
+
+export class SweepCall__Inputs {
+  _call: SweepCall;
+
+  constructor(call: SweepCall) {
+    this._call = call;
+  }
+
+  get token(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SweepCall__Outputs {
+  _call: SweepCall;
+
+  constructor(call: SweepCall) {
     this._call = call;
   }
 }

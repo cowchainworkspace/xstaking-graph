@@ -2,9 +2,11 @@ type XStakingPool @entity {
   id: ID!
   poolAddress: Bytes! # address
   poolDeployer: Bytes! # address 
+  description: String! #uint8
   poolId: BigInt! # uint256
   tokens: [Bytes!]! # address[]
   allocations: [BigInt!]! # uint256
+  volume: BigDecimal!
 }
 
 type PoolAmount @entity {
@@ -33,4 +35,20 @@ type TokenPrice @entity {
 type Depositor @entity {
   id: ID!
   depositor: Bytes!
+}
+
+type Deposit @entity {
+  id: ID!
+  depositor: Bytes!
+  pool: Bytes!
+  amount: BigDecimal!
+  timestamp: BigInt!
+}
+
+type Withdraw @entity {
+   id: ID!
+  depositor: Bytes!
+  pool: Bytes!
+  amount: BigDecimal!
+  timestamp: BigInt!
 }

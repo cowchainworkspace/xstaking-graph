@@ -1,13 +1,16 @@
-import { Address, BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts'
-import {
-    TokensAmounts as TokensAmountsEvent,
-    TokenSwap as TokenSwapEvent,
-    Transfer as TransferEvent, 
-} from '../generated/templates/XStakingPool/XStakingPool'
+import {Address, BigDecimal, BigInt, Bytes, bigDecimal, log} from '@graphprotocol/graph-ts'
+import {Deposit, Depositor, PoolAmount, TokenInfo, TokenPrice, Withdraw, XStakingPool} from '../generated/schema'
 import {
     IToken
 } from '../generated/templates/XStakingPool/IToken'
-import { PoolAmount, TokenInfo, Depositor, TokenPrice } from '../generated/schema'
+import {
+    Deposit as DepositEvent,
+    TokenSwap as TokenSwapEvent,
+    TokensAmounts as TokensAmountsEvent,
+    Transfer as TransferEvent,
+    Volume as VolumeEvent,
+    Withdraw as WithdrawEvent
+} from '../generated/templates/XStakingPool/XStakingPool'
 
 export function handleTokensAmounts(event: TokensAmountsEvent): void {
     const id = event.address.toHexString() + '-' + event.block.timestamp.toString()
@@ -34,6 +37,7 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
     // token info id = address of pool + token address
     const tokenInfoId = event.address.toHexString() + "-" + event.params.token.toHexString()
     let tokenInfoEntity = TokenInfo.load(tokenInfoId)
+
     if (!tokenInfoEntity) {
         tokenInfoEntity = new TokenInfo(tokenInfoId)
         
@@ -79,8 +83,6 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
     tokenPriceEntity.tokenAddress = event.params.token
     tokenPriceEntity.tokenPrice = rawPrice
     tokenPriceEntity.timestamp = event.block.timestamp
-    
-    tokenPriceEntity.save()
 }
 
 export function handleTransfer(event: TransferEvent): void {
@@ -91,4 +93,33 @@ export function handleTransfer(event: TransferEvent): void {
     }
     entity.depositor = event.params.to
     entity.save()
+}
+
+export function handleVolume(event: VolumeEvent): void {
+    let pool = XStakingPool.load(event.address.toHexString())
+    
+    if(pool) {
+        const volumeAmount = new BigDecimal(event.params.amount)
+        log.info('pool volume : {}, {}', [pool.volume.toString(), volumeAmount.toString()])
+        pool.volume = pool.volume.plus(volumeAmount) 
+        pool.save()
+    }
+}
+
+export function handleDeposit(event:DepositEvent): void {
+    let deposit = new Deposit(event.transaction.hash.toHexString())
+    deposit.pool = event.params.pool
+    deposit.depositor = event.params.depositor
+    deposit.amount = new BigDecimal(event.params.amount)
+    deposit.timestamp = event.block.timestamp
+    deposit.save()
+}
+
+export function handleWithdraw(event:WithdrawEvent): void {
+    let withdraw = new Withdraw(event.transaction.hash.toHexString())
+    withdraw.pool = event.params.pool
+    withdraw.depositor = event.params.depositor
+    withdraw.amount = new BigDecimal(event.params.amount)
+    withdraw.timestamp = event.block.timestamp
+    withdraw.save()
 }
