@@ -83,6 +83,7 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
     tokenPriceEntity.tokenAddress = event.params.token
     tokenPriceEntity.tokenPrice = rawPrice
     tokenPriceEntity.timestamp = event.block.timestamp
+    tokenPriceEntity.save()
 }
 
 export function handleTransfer(event: TransferEvent): void {
