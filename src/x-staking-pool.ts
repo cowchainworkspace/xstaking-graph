@@ -21,17 +21,6 @@ export function handleTokensAmounts(event: TokensAmountsEvent): void {
     poolAmountEntity.tokenAmounts = event.params.tokenAmounts
     poolAmountEntity.save()
 }
-// timestamp1
-// {
-//     tokens: [0x01, 0x02]
-//     tokenAmounts: [1000, 2000] // 1000 * 0.5 + 2000 * 0.7 = VOLUME1
-// }
-
-// timestamp2:
-// {
-//     tokens: [0x01, 0x02]
-//     tokenAmounts: [4000, 8000] // 4000 * 0.5 + 8000 * 0.7 = VOLUME2 
-// }
 
 export function handleTokenSwap(event: TokenSwapEvent): void {
     // token info id = address of pool + token address
@@ -80,6 +69,7 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
     
     let tokenPriceId = event.params.token.toHexString() + '-' + event.block.timestamp.toString()
     let tokenPriceEntity = new TokenPrice(tokenPriceId)
+    tokenPriceEntity.poolAddress = event.address
     tokenPriceEntity.tokenAddress = event.params.token
     tokenPriceEntity.tokenPrice = rawPrice
     tokenPriceEntity.timestamp = event.block.timestamp
