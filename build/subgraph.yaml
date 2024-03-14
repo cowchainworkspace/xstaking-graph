@@ -33,9 +33,12 @@ templates:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - TokensAmounts
+        - PoolAmount
         - TokenInfo
+        - TokenPrice
         - Depositor
+        - Deposit
+        - Withdraw
       abis:
         - name: XStakingPool
           file: XStakingPool/abis/XStakingPool.json
@@ -46,12 +49,10 @@ templates:
           handler: handleTokensAmounts
         - event: TokenSwap(address,uint256,uint256)
           handler: handleTokenSwap
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
         - event: Volume(uint256)
           handler: handleVolume
-        - event: Deposit(address,address,uint256)
+        - event: Deposit(address,address,uint256,uint256[])
           handler: handleDeposit
-        - event: Withdraw(address,address,uint256)
+        - event: Withdraw(address,address,uint256,uint256[])
           handler: handleWithdraw
       file: templates/XStakingPool/XStakingPool.wasm

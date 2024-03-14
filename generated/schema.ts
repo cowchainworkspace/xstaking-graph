@@ -367,6 +367,19 @@ export class TokenPrice extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get poolAddress(): Bytes {
+    let value = this.get("poolAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set poolAddress(value: Bytes) {
+    this.set("poolAddress", Value.fromBytes(value));
+  }
+
   get tokenAddress(): Bytes {
     let value = this.get("tokenAddress");
     if (!value || value.kind == ValueKind.NULL) {
@@ -446,6 +459,19 @@ export class Depositor extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
   get depositor(): Bytes {
     let value = this.get("depositor");
     if (!value || value.kind == ValueKind.NULL) {
@@ -457,6 +483,32 @@ export class Depositor extends Entity {
 
   set depositor(value: Bytes) {
     this.set("depositor", Value.fromBytes(value));
+  }
+
+  get pool(): Bytes {
+    let value = this.get("pool");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set pool(value: Bytes) {
+    this.set("pool", Value.fromBytes(value));
+  }
+
+  get amounts(): Array<BigInt> {
+    let value = this.get("amounts");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set amounts(value: Array<BigInt>) {
+    this.set("amounts", Value.fromBigIntArray(value));
   }
 }
 

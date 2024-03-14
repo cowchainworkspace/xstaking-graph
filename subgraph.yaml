@@ -50,12 +50,12 @@ templates:
           handler: handleTokensAmounts
         - event: TokenSwap(address,uint256,uint256)
           handler: handleTokenSwap
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+        # - event: Transfer(indexed address,indexed address,uint256)
+        #   handler: handleTransfer
         - event: Volume(uint256)
           handler: handleVolume
-        - event: Deposit(address,address,uint256)
+        - event: Deposit(address,address,uint256,uint256[])
           handler: handleDeposit
-        - event: Withdraw(address,address,uint256)
+        - event: Withdraw(address,address,uint256,uint256[])
           handler: handleWithdraw
       file: ./src/x-staking-pool.ts

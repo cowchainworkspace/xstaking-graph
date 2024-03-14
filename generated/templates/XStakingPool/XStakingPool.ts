@@ -60,6 +60,10 @@ export class Deposit__Params {
   get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
+
+  get userTokenAmounts(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
+  }
 }
 
 export class Initialized extends ethereum.Event {
@@ -239,6 +243,10 @@ export class Withdraw__Params {
 
   get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+
+  get userTokenAmounts(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
   }
 }
 
@@ -608,6 +616,29 @@ export class XStakingPool extends ethereum.SmartContract {
         value[1].toBigIntArray(),
       ),
     );
+  }
+
+  getUserTokenAmounts(user: Address): Array<BigInt> {
+    let result = super.call(
+      "getUserTokenAmounts",
+      "getUserTokenAmounts(address):(uint256[])",
+      [ethereum.Value.fromAddress(user)],
+    );
+
+    return result[0].toBigIntArray();
+  }
+
+  try_getUserTokenAmounts(user: Address): ethereum.CallResult<Array<BigInt>> {
+    let result = super.tryCall(
+      "getUserTokenAmounts",
+      "getUserTokenAmounts(address):(uint256[])",
+      [ethereum.Value.fromAddress(user)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigIntArray());
   }
 
   name(): string {

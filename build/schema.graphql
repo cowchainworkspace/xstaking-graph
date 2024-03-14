@@ -27,6 +27,7 @@ type TokenInfo @entity {
 
 type TokenPrice @entity {
   id: ID!
+  poolAddress: Bytes!
   tokenAddress: Bytes!
   tokenPrice: BigDecimal!
   timestamp: BigInt!
@@ -34,7 +35,10 @@ type TokenPrice @entity {
 
 type Depositor @entity {
   id: ID!
+  timestamp: BigInt!
   depositor: Bytes!
+  pool: Bytes!
+  amounts: [BigInt!]!
 }
 
 type Deposit @entity {
@@ -46,7 +50,7 @@ type Deposit @entity {
 }
 
 type Withdraw @entity {
-   id: ID!
+  id: ID!
   depositor: Bytes!
   pool: Bytes!
   amount: BigDecimal!

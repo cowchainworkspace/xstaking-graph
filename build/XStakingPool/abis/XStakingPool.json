@@ -200,6 +200,12 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "userTokenAmounts",
+        "type": "uint256[]"
       }
     ],
     "name": "Deposit",
@@ -358,6 +364,12 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "userTokenAmounts",
+        "type": "uint256[]"
       }
     ],
     "name": "Withdraw",
@@ -610,6 +622,25 @@
       {
         "internalType": "uint256[]",
         "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserTokenAmounts",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenAmounts",
         "type": "uint256[]"
       }
     ],
