@@ -56,3 +56,10 @@ type Withdraw @entity {
   amount: BigDecimal!
   timestamp: BigInt!
 }
+
+type PoolCapitalization @entity {
+  id: ID!
+  pool: Bytes!
+  timestamp: BigInt!
+  capitalization: BigDecimal!
+}

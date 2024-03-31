@@ -268,6 +268,25 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "capitalization",
+        "type": "uint256"
+      }
+    ],
+    "name": "PoolCapitalization",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -329,6 +348,31 @@
       }
     ],
     "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "capitalization",
+        "type": "uint256"
+      }
+    ],
+    "name": "UserCapitalization",
     "type": "event"
   },
   {
@@ -484,11 +528,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "amountLP",
         "type": "uint256"
@@ -508,17 +547,41 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "baseTokenAmount",
+        "name": "depositTokenAmount",
         "type": "uint256"
       },
       {
-        "internalType": "bool",
-        "name": "useXBR",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "capitalization",
+        "type": "uint256"
       }
     ],
-    "name": "calcBaseTokenAllocationForDeposit",
+    "name": "calcAmountLPToMint",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "depositTokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "calcDepositTokenAllocationForDeposit",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -532,6 +595,66 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "depositTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "useXBR",
+        "type": "bool"
+      }
+    ],
+    "name": "calculateTotalDepositToken",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalDepositToken",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "xbrAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "capitalizationCap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "capitalizationDecimals",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -550,8 +673,13 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "baseTokenAmount",
+        "name": "depositTokenAmount",
         "type": "uint256"
       },
       {
@@ -580,12 +708,17 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "baseTokenAmount",
+        "name": "depositTokenAmount",
         "type": "uint256"
       },
       {
@@ -660,6 +793,11 @@
         "type": "address"
       },
       {
+        "internalType": "uint256",
+        "name": "_capitalizationCap",
+        "type": "uint256"
+      },
+      {
         "internalType": "address[]",
         "name": "_tokens",
         "type": "address[]"
@@ -681,13 +819,26 @@
       },
       {
         "internalType": "uint256",
-        "name": "initialBaseTokenAmount",
+        "name": "initialDepositTokenAmount",
         "type": "uint256"
       }
     ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isDepositPaused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -758,6 +909,32 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_capitalizationCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCapitalizationCap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_depositPaused",
+        "type": "bool"
+      }
+    ],
+    "name": "setPausedDeposit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -950,14 +1127,9 @@
         "internalType": "address",
         "name": "user",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
       }
     ],
-    "name": "userTokenAmount",
+    "name": "userDeposit",
     "outputs": [
       {
         "internalType": "uint256",
@@ -970,6 +1142,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "amountLP",

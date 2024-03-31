@@ -110,7 +110,7 @@ export class OwnershipTransferred__Params {
   }
 }
 
-export class XStakingFactory__calcBaseTokenAllocationForDeployPoolResult {
+export class XStakingFactory__calcDepositTokenAmountAllocationForDeployPoolResult {
   value0: Array<BigInt>;
   value1: BigInt;
 
@@ -131,31 +131,6 @@ export class XStakingFactory__calcBaseTokenAllocationForDeployPoolResult {
   }
 
   getValue1(): BigInt {
-    return this.value1;
-  }
-}
-
-export class XStakingFactory__getBaseTokenAndOneInchRouterResult {
-  value0: Address;
-  value1: Address;
-
-  constructor(value0: Address, value1: Address) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromAddress(this.value0));
-    map.set("value1", ethereum.Value.fromAddress(this.value1));
-    return map;
-  }
-
-  getValue0(): Address {
-    return this.value0;
-  }
-
-  getValue1(): Address {
     return this.value1;
   }
 }
@@ -185,7 +160,57 @@ export class XStakingFactory__getStakingFeeResult {
   }
 }
 
+export class XStakingFactory__getTotalDepositTokenAmountForDeployPoolResult {
+  value0: BigInt;
+  value1: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    return map;
+  }
+
+  getDepositTokenAmount(): BigInt {
+    return this.value0;
+  }
+
+  getXbrAmount(): BigInt {
+    return this.value1;
+  }
+}
+
 export class XStakingFactory__getUnstakingFeeResult {
+  value0: BigInt;
+  value1: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    return map;
+  }
+
+  getValue0(): BigInt {
+    return this.value0;
+  }
+
+  getValue1(): BigInt {
+    return this.value1;
+  }
+}
+
+export class XStakingFactory__getXBRDiscountResult {
   value0: BigInt;
   value1: BigInt;
 
@@ -238,21 +263,6 @@ export class XStakingFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  baseToken(): Address {
-    let result = super.call("baseToken", "baseToken():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_baseToken(): ethereum.CallResult<Address> {
-    let result = super.tryCall("baseToken", "baseToken():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
   beacon(): Address {
     let result = super.call("beacon", "beacon():(address)", []);
 
@@ -268,39 +278,39 @@ export class XStakingFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  calcBaseTokenAllocationForDeployPool(
+  calcDepositTokenAmountAllocationForDeployPool(
     tokens: Array<Address>,
     allocations: Array<BigInt>,
-    baseTokenAmount: BigInt,
-  ): XStakingFactory__calcBaseTokenAllocationForDeployPoolResult {
+    initialDepositTokenAmount: BigInt,
+  ): XStakingFactory__calcDepositTokenAmountAllocationForDeployPoolResult {
     let result = super.call(
-      "calcBaseTokenAllocationForDeployPool",
-      "calcBaseTokenAllocationForDeployPool(address[],uint256[],uint256):(uint256[],uint256)",
+      "calcDepositTokenAmountAllocationForDeployPool",
+      "calcDepositTokenAmountAllocationForDeployPool(address[],uint256[],uint256):(uint256[],uint256)",
       [
         ethereum.Value.fromAddressArray(tokens),
         ethereum.Value.fromUnsignedBigIntArray(allocations),
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(initialDepositTokenAmount),
       ],
     );
 
-    return new XStakingFactory__calcBaseTokenAllocationForDeployPoolResult(
+    return new XStakingFactory__calcDepositTokenAmountAllocationForDeployPoolResult(
       result[0].toBigIntArray(),
       result[1].toBigInt(),
     );
   }
 
-  try_calcBaseTokenAllocationForDeployPool(
+  try_calcDepositTokenAmountAllocationForDeployPool(
     tokens: Array<Address>,
     allocations: Array<BigInt>,
-    baseTokenAmount: BigInt,
-  ): ethereum.CallResult<XStakingFactory__calcBaseTokenAllocationForDeployPoolResult> {
+    initialDepositTokenAmount: BigInt,
+  ): ethereum.CallResult<XStakingFactory__calcDepositTokenAmountAllocationForDeployPoolResult> {
     let result = super.tryCall(
-      "calcBaseTokenAllocationForDeployPool",
-      "calcBaseTokenAllocationForDeployPool(address[],uint256[],uint256):(uint256[],uint256)",
+      "calcDepositTokenAmountAllocationForDeployPool",
+      "calcDepositTokenAmountAllocationForDeployPool(address[],uint256[],uint256):(uint256[],uint256)",
       [
         ethereum.Value.fromAddressArray(tokens),
         ethereum.Value.fromUnsignedBigIntArray(allocations),
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(initialDepositTokenAmount),
       ],
     );
     if (result.reverted) {
@@ -308,7 +318,7 @@ export class XStakingFactory extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new XStakingFactory__calcBaseTokenAllocationForDeployPoolResult(
+      new XStakingFactory__calcDepositTokenAmountAllocationForDeployPoolResult(
         value[0].toBigIntArray(),
         value[1].toBigInt(),
       ),
@@ -316,23 +326,29 @@ export class XStakingFactory extends ethereum.SmartContract {
   }
 
   deployPool(
+    depositToken: Address,
+    capitalizationCap: BigInt,
     tokens: Array<Address>,
     allocations: Array<BigInt>,
     profitSharingFeeNumerator: BigInt,
-    initialBaseTokenAmount: BigInt,
+    initialDepositTokenAmount: BigInt,
     oneInchSwapData: Array<Bytes>,
     description: string,
+    useXBR: boolean,
   ): Address {
     let result = super.call(
       "deployPool",
-      "deployPool(address[],uint256[],uint256,uint256,bytes[],string):(address)",
+      "deployPool(address,uint256,address[],uint256[],uint256,uint256,bytes[],string,bool):(address)",
       [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(capitalizationCap),
         ethereum.Value.fromAddressArray(tokens),
         ethereum.Value.fromUnsignedBigIntArray(allocations),
         ethereum.Value.fromUnsignedBigInt(profitSharingFeeNumerator),
-        ethereum.Value.fromUnsignedBigInt(initialBaseTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(initialDepositTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromString(description),
+        ethereum.Value.fromBoolean(useXBR),
       ],
     );
 
@@ -340,23 +356,29 @@ export class XStakingFactory extends ethereum.SmartContract {
   }
 
   try_deployPool(
+    depositToken: Address,
+    capitalizationCap: BigInt,
     tokens: Array<Address>,
     allocations: Array<BigInt>,
     profitSharingFeeNumerator: BigInt,
-    initialBaseTokenAmount: BigInt,
+    initialDepositTokenAmount: BigInt,
     oneInchSwapData: Array<Bytes>,
     description: string,
+    useXBR: boolean,
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "deployPool",
-      "deployPool(address[],uint256[],uint256,uint256,bytes[],string):(address)",
+      "deployPool(address,uint256,address[],uint256[],uint256,uint256,bytes[],string,bool):(address)",
       [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(capitalizationCap),
         ethereum.Value.fromAddressArray(tokens),
         ethereum.Value.fromUnsignedBigIntArray(allocations),
         ethereum.Value.fromUnsignedBigInt(profitSharingFeeNumerator),
-        ethereum.Value.fromUnsignedBigInt(initialBaseTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(initialDepositTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromString(description),
+        ethereum.Value.fromBoolean(useXBR),
       ],
     );
     if (result.reverted) {
@@ -366,35 +388,50 @@ export class XStakingFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getBaseTokenAndOneInchRouter(): XStakingFactory__getBaseTokenAndOneInchRouterResult {
+  depositTokenIndex(depositToken: Address): BigInt {
     let result = super.call(
-      "getBaseTokenAndOneInchRouter",
-      "getBaseTokenAndOneInchRouter():(address,address)",
-      [],
+      "depositTokenIndex",
+      "depositTokenIndex(address):(uint256)",
+      [ethereum.Value.fromAddress(depositToken)],
     );
 
-    return new XStakingFactory__getBaseTokenAndOneInchRouterResult(
-      result[0].toAddress(),
-      result[1].toAddress(),
-    );
+    return result[0].toBigInt();
   }
 
-  try_getBaseTokenAndOneInchRouter(): ethereum.CallResult<XStakingFactory__getBaseTokenAndOneInchRouterResult> {
+  try_depositTokenIndex(depositToken: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getBaseTokenAndOneInchRouter",
-      "getBaseTokenAndOneInchRouter():(address,address)",
-      [],
+      "depositTokenIndex",
+      "depositTokenIndex(address):(uint256)",
+      [ethereum.Value.fromAddress(depositToken)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new XStakingFactory__getBaseTokenAndOneInchRouterResult(
-        value[0].toAddress(),
-        value[1].toAddress(),
-      ),
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  depositTokens(param0: BigInt): Address {
+    let result = super.call(
+      "depositTokens",
+      "depositTokens(uint256):(address)",
+      [ethereum.Value.fromUnsignedBigInt(param0)],
     );
+
+    return result[0].toAddress();
+  }
+
+  try_depositTokens(param0: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "depositTokens",
+      "depositTokens(uint256):(address)",
+      [ethereum.Value.fromUnsignedBigInt(param0)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getStakingFee(): XStakingFactory__getStakingFeeResult {
@@ -428,29 +465,51 @@ export class XStakingFactory extends ethereum.SmartContract {
     );
   }
 
-  getTotalBaseTokenForDeployPool(baseTokenAmount: BigInt): BigInt {
+  getTotalDepositTokenAmountForDeployPool(
+    depositToken: Address,
+    initialDepositTokenAmount: BigInt,
+    useXBR: boolean,
+  ): XStakingFactory__getTotalDepositTokenAmountForDeployPoolResult {
     let result = super.call(
-      "getTotalBaseTokenForDeployPool",
-      "getTotalBaseTokenForDeployPool(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(baseTokenAmount)],
+      "getTotalDepositTokenAmountForDeployPool",
+      "getTotalDepositTokenAmountForDeployPool(address,uint256,bool):(uint256,uint256)",
+      [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(initialDepositTokenAmount),
+        ethereum.Value.fromBoolean(useXBR),
+      ],
     );
 
-    return result[0].toBigInt();
+    return new XStakingFactory__getTotalDepositTokenAmountForDeployPoolResult(
+      result[0].toBigInt(),
+      result[1].toBigInt(),
+    );
   }
 
-  try_getTotalBaseTokenForDeployPool(
-    baseTokenAmount: BigInt,
-  ): ethereum.CallResult<BigInt> {
+  try_getTotalDepositTokenAmountForDeployPool(
+    depositToken: Address,
+    initialDepositTokenAmount: BigInt,
+    useXBR: boolean,
+  ): ethereum.CallResult<XStakingFactory__getTotalDepositTokenAmountForDeployPoolResult> {
     let result = super.tryCall(
-      "getTotalBaseTokenForDeployPool",
-      "getTotalBaseTokenForDeployPool(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(baseTokenAmount)],
+      "getTotalDepositTokenAmountForDeployPool",
+      "getTotalDepositTokenAmountForDeployPool(address,uint256,bool):(uint256,uint256)",
+      [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(initialDepositTokenAmount),
+        ethereum.Value.fromBoolean(useXBR),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    return ethereum.CallResult.fromValue(
+      new XStakingFactory__getTotalDepositTokenAmountForDeployPoolResult(
+        value[0].toBigInt(),
+        value[1].toBigInt(),
+      ),
+    );
   }
 
   getUnstakingFee(): XStakingFactory__getUnstakingFeeResult {
@@ -478,6 +537,69 @@ export class XStakingFactory extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(
       new XStakingFactory__getUnstakingFeeResult(
+        value[0].toBigInt(),
+        value[1].toBigInt(),
+      ),
+    );
+  }
+
+  getXBRAmount(depositToken: Address, depositTokenAmount: BigInt): BigInt {
+    let result = super.call(
+      "getXBRAmount",
+      "getXBRAmount(address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
+      ],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getXBRAmount(
+    depositToken: Address,
+    depositTokenAmount: BigInt,
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getXBRAmount",
+      "getXBRAmount(address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getXBRDiscount(): XStakingFactory__getXBRDiscountResult {
+    let result = super.call(
+      "getXBRDiscount",
+      "getXBRDiscount():(uint256,uint256)",
+      [],
+    );
+
+    return new XStakingFactory__getXBRDiscountResult(
+      result[0].toBigInt(),
+      result[1].toBigInt(),
+    );
+  }
+
+  try_getXBRDiscount(): ethereum.CallResult<XStakingFactory__getXBRDiscountResult> {
+    let result = super.tryCall(
+      "getXBRDiscount",
+      "getXBRDiscount():(uint256,uint256)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new XStakingFactory__getXBRDiscountResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
       ),
@@ -560,6 +682,29 @@ export class XStakingFactory extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  isDepositToken(token: Address): boolean {
+    let result = super.call(
+      "isDepositToken",
+      "isDepositToken(address):(bool)",
+      [ethereum.Value.fromAddress(token)],
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isDepositToken(token: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isDepositToken",
+      "isDepositToken(address):(bool)",
+      [ethereum.Value.fromAddress(token)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   oneInchRouter(): Address {
@@ -657,6 +802,48 @@ export class XStakingFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  treasuryWallet(): Address {
+    let result = super.call("treasuryWallet", "treasuryWallet():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_treasuryWallet(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "treasuryWallet",
+      "treasuryWallet():(address)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  uniswapV3SwapRouter(): Address {
+    let result = super.call(
+      "uniswapV3SwapRouter",
+      "uniswapV3SwapRouter():(address)",
+      [],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_uniswapV3SwapRouter(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "uniswapV3SwapRouter",
+      "uniswapV3SwapRouter():(address)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   unstakingFeeNumerator(): BigInt {
     let result = super.call(
       "unstakingFeeNumerator",
@@ -680,14 +867,83 @@ export class XStakingFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  xbrToken(): Address {
-    let result = super.call("xbrToken", "xbrToken():(address)", []);
+  xbr(): Address {
+    let result = super.call("xbr", "xbr():(address)", []);
 
     return result[0].toAddress();
   }
 
-  try_xbrToken(): ethereum.CallResult<Address> {
-    let result = super.tryCall("xbrToken", "xbrToken():(address)", []);
+  try_xbr(): ethereum.CallResult<Address> {
+    let result = super.tryCall("xbr", "xbr():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  xbrDiscountNumerator(): BigInt {
+    let result = super.call(
+      "xbrDiscountNumerator",
+      "xbrDiscountNumerator():(uint256)",
+      [],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_xbrDiscountNumerator(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "xbrDiscountNumerator",
+      "xbrDiscountNumerator():(uint256)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  xbrUniswapV3Pool(depositToken: Address): Address {
+    let result = super.call(
+      "xbrUniswapV3Pool",
+      "xbrUniswapV3Pool(address):(address)",
+      [ethereum.Value.fromAddress(depositToken)],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_xbrUniswapV3Pool(depositToken: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "xbrUniswapV3Pool",
+      "xbrUniswapV3Pool(address):(address)",
+      [ethereum.Value.fromAddress(depositToken)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  xbrUniswapV3Pools(param0: BigInt): Address {
+    let result = super.call(
+      "xbrUniswapV3Pools",
+      "xbrUniswapV3Pools(uint256):(address)",
+      [ethereum.Value.fromUnsignedBigInt(param0)],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_xbrUniswapV3Pools(param0: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "xbrUniswapV3Pools",
+      "xbrUniswapV3Pools(uint256):(address)",
+      [ethereum.Value.fromUnsignedBigInt(param0)],
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -785,28 +1041,40 @@ export class DeployPoolCall__Inputs {
     this._call = call;
   }
 
+  get depositToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get capitalizationCap(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
   get tokens(): Array<Address> {
-    return this._call.inputValues[0].value.toAddressArray();
+    return this._call.inputValues[2].value.toAddressArray();
   }
 
   get allocations(): Array<BigInt> {
-    return this._call.inputValues[1].value.toBigIntArray();
+    return this._call.inputValues[3].value.toBigIntArray();
   }
 
   get profitSharingFeeNumerator(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 
-  get initialBaseTokenAmount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+  get initialDepositTokenAmount(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
   }
 
   get oneInchSwapData(): Array<Bytes> {
-    return this._call.inputValues[4].value.toBytesArray();
+    return this._call.inputValues[6].value.toBytesArray();
   }
 
   get description(): string {
-    return this._call.inputValues[5].value.toString();
+    return this._call.inputValues[7].value.toString();
+  }
+
+  get useXBR(): boolean {
+    return this._call.inputValues[8].value.toBoolean();
   }
 }
 
@@ -843,24 +1111,44 @@ export class InitializeCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _baseToken(): Address {
+  get _treasuryWallet(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _oneInchRouter(): Address {
+  get _xbr(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
+  get _depositTokens(): Array<Address> {
+    return this._call.inputValues[3].value.toAddressArray();
+  }
+
+  get _xbrUniswapV3Pools(): Array<Address> {
+    return this._call.inputValues[4].value.toAddressArray();
+  }
+
+  get _uniswapV3SwapRouter(): Address {
+    return this._call.inputValues[5].value.toAddress();
+  }
+
+  get _oneInchRouter(): Address {
+    return this._call.inputValues[6].value.toAddress();
+  }
+
   get _poolCreationFee(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[7].value.toBigInt();
   }
 
   get _stakingFeeNumerator(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[8].value.toBigInt();
   }
 
   get _unstakingFeeNumerator(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[9].value.toBigInt();
+  }
+
+  get _xbrDiscountNumerator(): BigInt {
+    return this._call.inputValues[10].value.toBigInt();
   }
 }
 
@@ -958,6 +1246,36 @@ export class SetStakingFeeNumeratorCall__Outputs {
   }
 }
 
+export class SetTreasuryWalletCall extends ethereum.Call {
+  get inputs(): SetTreasuryWalletCall__Inputs {
+    return new SetTreasuryWalletCall__Inputs(this);
+  }
+
+  get outputs(): SetTreasuryWalletCall__Outputs {
+    return new SetTreasuryWalletCall__Outputs(this);
+  }
+}
+
+export class SetTreasuryWalletCall__Inputs {
+  _call: SetTreasuryWalletCall;
+
+  constructor(call: SetTreasuryWalletCall) {
+    this._call = call;
+  }
+
+  get _treasuryWallet(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetTreasuryWalletCall__Outputs {
+  _call: SetTreasuryWalletCall;
+
+  constructor(call: SetTreasuryWalletCall) {
+    this._call = call;
+  }
+}
+
 export class SetUnstakingFeeNumeratorCall extends ethereum.Call {
   get inputs(): SetUnstakingFeeNumeratorCall__Inputs {
     return new SetUnstakingFeeNumeratorCall__Inputs(this);
@@ -988,32 +1306,66 @@ export class SetUnstakingFeeNumeratorCall__Outputs {
   }
 }
 
-export class SetXBRTokenCall extends ethereum.Call {
-  get inputs(): SetXBRTokenCall__Inputs {
-    return new SetXBRTokenCall__Inputs(this);
+export class SetXBRDiscountNumeratorCall extends ethereum.Call {
+  get inputs(): SetXBRDiscountNumeratorCall__Inputs {
+    return new SetXBRDiscountNumeratorCall__Inputs(this);
   }
 
-  get outputs(): SetXBRTokenCall__Outputs {
-    return new SetXBRTokenCall__Outputs(this);
+  get outputs(): SetXBRDiscountNumeratorCall__Outputs {
+    return new SetXBRDiscountNumeratorCall__Outputs(this);
   }
 }
 
-export class SetXBRTokenCall__Inputs {
-  _call: SetXBRTokenCall;
+export class SetXBRDiscountNumeratorCall__Inputs {
+  _call: SetXBRDiscountNumeratorCall;
 
-  constructor(call: SetXBRTokenCall) {
+  constructor(call: SetXBRDiscountNumeratorCall) {
     this._call = call;
   }
 
-  get _xbrToken(): Address {
-    return this._call.inputValues[0].value.toAddress();
+  get _xbrDiscountNumerator(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
   }
 }
 
-export class SetXBRTokenCall__Outputs {
-  _call: SetXBRTokenCall;
+export class SetXBRDiscountNumeratorCall__Outputs {
+  _call: SetXBRDiscountNumeratorCall;
 
-  constructor(call: SetXBRTokenCall) {
+  constructor(call: SetXBRDiscountNumeratorCall) {
+    this._call = call;
+  }
+}
+
+export class SetXbrUniswapV3PoolCall extends ethereum.Call {
+  get inputs(): SetXbrUniswapV3PoolCall__Inputs {
+    return new SetXbrUniswapV3PoolCall__Inputs(this);
+  }
+
+  get outputs(): SetXbrUniswapV3PoolCall__Outputs {
+    return new SetXbrUniswapV3PoolCall__Outputs(this);
+  }
+}
+
+export class SetXbrUniswapV3PoolCall__Inputs {
+  _call: SetXbrUniswapV3PoolCall;
+
+  constructor(call: SetXbrUniswapV3PoolCall) {
+    this._call = call;
+  }
+
+  get depositToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get uniswapV3Pool(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class SetXbrUniswapV3PoolCall__Outputs {
+  _call: SetXbrUniswapV3PoolCall;
+
+  constructor(call: SetXbrUniswapV3PoolCall) {
     this._call = call;
   }
 }
@@ -1048,36 +1400,40 @@ export class SweepCall__Outputs {
   }
 }
 
-export class TransferBaseTokenCall extends ethereum.Call {
-  get inputs(): TransferBaseTokenCall__Inputs {
-    return new TransferBaseTokenCall__Inputs(this);
+export class TransferDepositTokenCall extends ethereum.Call {
+  get inputs(): TransferDepositTokenCall__Inputs {
+    return new TransferDepositTokenCall__Inputs(this);
   }
 
-  get outputs(): TransferBaseTokenCall__Outputs {
-    return new TransferBaseTokenCall__Outputs(this);
+  get outputs(): TransferDepositTokenCall__Outputs {
+    return new TransferDepositTokenCall__Outputs(this);
   }
 }
 
-export class TransferBaseTokenCall__Inputs {
-  _call: TransferBaseTokenCall;
+export class TransferDepositTokenCall__Inputs {
+  _call: TransferDepositTokenCall;
 
-  constructor(call: TransferBaseTokenCall) {
+  constructor(call: TransferDepositTokenCall) {
     this._call = call;
   }
 
-  get to(): Address {
+  get depositToken(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
+  get to(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
   get amount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 }
 
-export class TransferBaseTokenCall__Outputs {
-  _call: TransferBaseTokenCall;
+export class TransferDepositTokenCall__Outputs {
+  _call: TransferDepositTokenCall;
 
-  constructor(call: TransferBaseTokenCall) {
+  constructor(call: TransferDepositTokenCall) {
     this._call = call;
   }
 }

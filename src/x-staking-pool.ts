@@ -1,5 +1,5 @@
 import { Address, BigDecimal, BigInt, Bytes, bigDecimal, log } from '@graphprotocol/graph-ts'
-import { Deposit, Depositor, PoolAmount, TokenInfo, TokenPrice, Withdraw, XStakingPool } from '../generated/schema'
+import { Deposit, Depositor, PoolAmount, TokenInfo, TokenPrice, Withdraw, XStakingPool, PoolCapitalization } from '../generated/schema'
 import {
     IToken
 } from '../generated/templates/XStakingPool/IToken'
@@ -10,6 +10,7 @@ import {
     Transfer as TransferEvent,
     Volume as VolumeEvent,
     Withdraw as WithdrawEvent,
+    PoolCapitalization as PoolCapitalizationEvent,
     XStakingPool as XStakingPoolContract
 } from '../generated/templates/XStakingPool/XStakingPool'
 
@@ -77,16 +78,6 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
     tokenPriceEntity.save()
 }
 
-// export function handleTransfer(event: TransferEvent): void {
-//     let id = event.address.toHexString();
-//     let entity = new Depositor(id)
-//     if (event.params.to == Address.zero()) {
-//         return
-//     }
-//     entity.depositor = event.params.to
-//     entity.save()
-// }
-
 export function handleVolume(event: VolumeEvent): void {
     let pool = XStakingPool.load(event.address.toHexString())
 
@@ -130,4 +121,15 @@ export function handleWithdraw(event: WithdrawEvent): void {
     depositorEntity.pool = event.address
     depositorEntity.amounts = event.params.userTokenAmounts
     depositorEntity.save()
+}
+
+export function handlePoolCapitalization(event: PoolCapitalizationEvent): void {
+    const poolCapitalizationId = event.params.pool.toHexString() + "-" + event.block.timestamp.toString() 
+    let entity = new PoolCapitalization(poolCapitalizationId)
+    entity.pool = event.params.pool
+    entity.timestamp = event.block.timestamp
+    let capitalizationRaw = new BigDecimal(event.params.capitalization)
+    let multiplier = BigDecimal.fromString('1000000')
+    entity.capitalization = capitalizationRaw.div(multiplier)
+    entity.save()
 }

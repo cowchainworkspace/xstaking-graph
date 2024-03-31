@@ -128,6 +128,28 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class PoolCapitalization extends ethereum.Event {
+  get params(): PoolCapitalization__Params {
+    return new PoolCapitalization__Params(this);
+  }
+}
+
+export class PoolCapitalization__Params {
+  _event: PoolCapitalization;
+
+  constructor(event: PoolCapitalization) {
+    this._event = event;
+  }
+
+  get pool(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get capitalization(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class TokenSwap extends ethereum.Event {
   get params(): TokenSwap__Params {
     return new TokenSwap__Params(this);
@@ -202,6 +224,32 @@ export class Transfer__Params {
   }
 }
 
+export class UserCapitalization extends ethereum.Event {
+  get params(): UserCapitalization__Params {
+    return new UserCapitalization__Params(this);
+  }
+}
+
+export class UserCapitalization__Params {
+  _event: UserCapitalization;
+
+  constructor(event: UserCapitalization) {
+    this._event = event;
+  }
+
+  get pool(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get user(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get capitalization(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class Volume extends ethereum.Event {
   get params(): Volume__Params {
     return new Volume__Params(this);
@@ -250,7 +298,7 @@ export class Withdraw__Params {
   }
 }
 
-export class XStakingPool__calcBaseTokenAllocationForDepositResult {
+export class XStakingPool__calcDepositTokenAllocationForDepositResult {
   value0: Array<BigInt>;
   value1: BigInt;
 
@@ -271,6 +319,31 @@ export class XStakingPool__calcBaseTokenAllocationForDepositResult {
   }
 
   getValue1(): BigInt {
+    return this.value1;
+  }
+}
+
+export class XStakingPool__calculateTotalDepositTokenResult {
+  value0: BigInt;
+  value1: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    return map;
+  }
+
+  getTotalDepositToken(): BigInt {
+    return this.value0;
+  }
+
+  getXbrAmount(): BigInt {
     return this.value1;
   }
 }
@@ -412,33 +485,23 @@ export class XStakingPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  calcAllocatedTokensForWithdraw(
-    user: Address,
-    amountLP: BigInt,
-  ): Array<BigInt> {
+  calcAllocatedTokensForWithdraw(amountLP: BigInt): Array<BigInt> {
     let result = super.call(
       "calcAllocatedTokensForWithdraw",
-      "calcAllocatedTokensForWithdraw(address,uint256):(uint256[])",
-      [
-        ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(amountLP),
-      ],
+      "calcAllocatedTokensForWithdraw(uint256):(uint256[])",
+      [ethereum.Value.fromUnsignedBigInt(amountLP)],
     );
 
     return result[0].toBigIntArray();
   }
 
   try_calcAllocatedTokensForWithdraw(
-    user: Address,
     amountLP: BigInt,
   ): ethereum.CallResult<Array<BigInt>> {
     let result = super.tryCall(
       "calcAllocatedTokensForWithdraw",
-      "calcAllocatedTokensForWithdraw(address,uint256):(uint256[])",
-      [
-        ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(amountLP),
-      ],
+      "calcAllocatedTokensForWithdraw(uint256):(uint256[])",
+      [ethereum.Value.fromUnsignedBigInt(amountLP)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -447,34 +510,112 @@ export class XStakingPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigIntArray());
   }
 
-  calcBaseTokenAllocationForDeposit(
-    baseTokenAmount: BigInt,
-    useXBR: boolean,
-  ): XStakingPool__calcBaseTokenAllocationForDepositResult {
+  calcAmountLPToMint(
+    depositToken: Address,
+    depositTokenAmount: BigInt,
+    capitalization: BigInt,
+  ): BigInt {
     let result = super.call(
-      "calcBaseTokenAllocationForDeposit",
-      "calcBaseTokenAllocationForDeposit(uint256,bool):(uint256[],uint256)",
+      "calcAmountLPToMint",
+      "calcAmountLPToMint(address,uint256,uint256):(uint256)",
       [
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
-        ethereum.Value.fromBoolean(useXBR),
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(capitalization),
       ],
     );
 
-    return new XStakingPool__calcBaseTokenAllocationForDepositResult(
+    return result[0].toBigInt();
+  }
+
+  try_calcAmountLPToMint(
+    depositToken: Address,
+    depositTokenAmount: BigInt,
+    capitalization: BigInt,
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "calcAmountLPToMint",
+      "calcAmountLPToMint(address,uint256,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(capitalization),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  calcDepositTokenAllocationForDeposit(
+    depositTokenAmount: BigInt,
+  ): XStakingPool__calcDepositTokenAllocationForDepositResult {
+    let result = super.call(
+      "calcDepositTokenAllocationForDeposit",
+      "calcDepositTokenAllocationForDeposit(uint256):(uint256[],uint256)",
+      [ethereum.Value.fromUnsignedBigInt(depositTokenAmount)],
+    );
+
+    return new XStakingPool__calcDepositTokenAllocationForDepositResult(
       result[0].toBigIntArray(),
       result[1].toBigInt(),
     );
   }
 
-  try_calcBaseTokenAllocationForDeposit(
-    baseTokenAmount: BigInt,
-    useXBR: boolean,
-  ): ethereum.CallResult<XStakingPool__calcBaseTokenAllocationForDepositResult> {
+  try_calcDepositTokenAllocationForDeposit(
+    depositTokenAmount: BigInt,
+  ): ethereum.CallResult<XStakingPool__calcDepositTokenAllocationForDepositResult> {
     let result = super.tryCall(
-      "calcBaseTokenAllocationForDeposit",
-      "calcBaseTokenAllocationForDeposit(uint256,bool):(uint256[],uint256)",
+      "calcDepositTokenAllocationForDeposit",
+      "calcDepositTokenAllocationForDeposit(uint256):(uint256[],uint256)",
+      [ethereum.Value.fromUnsignedBigInt(depositTokenAmount)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new XStakingPool__calcDepositTokenAllocationForDepositResult(
+        value[0].toBigIntArray(),
+        value[1].toBigInt(),
+      ),
+    );
+  }
+
+  calculateTotalDepositToken(
+    depositToken: Address,
+    depositTokenAmount: BigInt,
+    useXBR: boolean,
+  ): XStakingPool__calculateTotalDepositTokenResult {
+    let result = super.call(
+      "calculateTotalDepositToken",
+      "calculateTotalDepositToken(address,uint256,bool):(uint256,uint256)",
       [
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
+        ethereum.Value.fromBoolean(useXBR),
+      ],
+    );
+
+    return new XStakingPool__calculateTotalDepositTokenResult(
+      result[0].toBigInt(),
+      result[1].toBigInt(),
+    );
+  }
+
+  try_calculateTotalDepositToken(
+    depositToken: Address,
+    depositTokenAmount: BigInt,
+    useXBR: boolean,
+  ): ethereum.CallResult<XStakingPool__calculateTotalDepositTokenResult> {
+    let result = super.tryCall(
+      "calculateTotalDepositToken",
+      "calculateTotalDepositToken(address,uint256,bool):(uint256,uint256)",
+      [
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
         ethereum.Value.fromBoolean(useXBR),
       ],
     );
@@ -483,11 +624,57 @@ export class XStakingPool extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new XStakingPool__calcBaseTokenAllocationForDepositResult(
-        value[0].toBigIntArray(),
+      new XStakingPool__calculateTotalDepositTokenResult(
+        value[0].toBigInt(),
         value[1].toBigInt(),
       ),
     );
+  }
+
+  capitalizationCap(): BigInt {
+    let result = super.call(
+      "capitalizationCap",
+      "capitalizationCap():(uint256)",
+      [],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_capitalizationCap(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "capitalizationCap",
+      "capitalizationCap():(uint256)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  capitalizationDecimals(): i32 {
+    let result = super.call(
+      "capitalizationDecimals",
+      "capitalizationDecimals():(uint8)",
+      [],
+    );
+
+    return result[0].toI32();
+  }
+
+  try_capitalizationDecimals(): ethereum.CallResult<i32> {
+    let result = super.tryCall(
+      "capitalizationDecimals",
+      "capitalizationDecimals():(uint8)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
   decimals(): i32 {
@@ -506,15 +693,17 @@ export class XStakingPool extends ethereum.SmartContract {
   }
 
   deposit(
-    baseTokenAmount: BigInt,
+    depositToken: Address,
+    depositTokenAmount: BigInt,
     oneInchSwapData: Array<Bytes>,
     useXBR: boolean,
   ): BigInt {
     let result = super.call(
       "deposit",
-      "deposit(uint256,bytes[],bool):(uint256)",
+      "deposit(address,uint256,bytes[],bool):(uint256)",
       [
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
       ],
@@ -524,15 +713,17 @@ export class XStakingPool extends ethereum.SmartContract {
   }
 
   try_deposit(
-    baseTokenAmount: BigInt,
+    depositToken: Address,
+    depositTokenAmount: BigInt,
     oneInchSwapData: Array<Bytes>,
     useXBR: boolean,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "deposit",
-      "deposit(uint256,bytes[],bool):(uint256)",
+      "deposit(address,uint256,bytes[],bool):(uint256)",
       [
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromAddress(depositToken),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
       ],
@@ -545,17 +736,19 @@ export class XStakingPool extends ethereum.SmartContract {
   }
 
   depositTo(
+    depositToken: Address,
     to: Address,
-    baseTokenAmount: BigInt,
+    depositTokenAmount: BigInt,
     oneInchSwapData: Array<Bytes>,
     useXBR: boolean,
   ): BigInt {
     let result = super.call(
       "depositTo",
-      "depositTo(address,uint256,bytes[],bool):(uint256)",
+      "depositTo(address,address,uint256,bytes[],bool):(uint256)",
       [
+        ethereum.Value.fromAddress(depositToken),
         ethereum.Value.fromAddress(to),
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
       ],
@@ -565,17 +758,19 @@ export class XStakingPool extends ethereum.SmartContract {
   }
 
   try_depositTo(
+    depositToken: Address,
     to: Address,
-    baseTokenAmount: BigInt,
+    depositTokenAmount: BigInt,
     oneInchSwapData: Array<Bytes>,
     useXBR: boolean,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "depositTo",
-      "depositTo(address,uint256,bytes[],bool):(uint256)",
+      "depositTo(address,address,uint256,bytes[],bool):(uint256)",
       [
+        ethereum.Value.fromAddress(depositToken),
         ethereum.Value.fromAddress(to),
-        ethereum.Value.fromUnsignedBigInt(baseTokenAmount),
+        ethereum.Value.fromUnsignedBigInt(depositTokenAmount),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
       ],
@@ -639,6 +834,25 @@ export class XStakingPool extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigIntArray());
+  }
+
+  isDepositPaused(): boolean {
+    let result = super.call("isDepositPaused", "isDepositPaused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_isDepositPaused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isDepositPaused",
+      "isDepositPaused():(bool)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   name(): string {
@@ -913,24 +1127,19 @@ export class XStakingPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  userTokenAmount(user: Address, token: Address): BigInt {
-    let result = super.call(
-      "userTokenAmount",
-      "userTokenAmount(address,address):(uint256)",
-      [ethereum.Value.fromAddress(user), ethereum.Value.fromAddress(token)],
-    );
+  userDeposit(user: Address): BigInt {
+    let result = super.call("userDeposit", "userDeposit(address):(uint256)", [
+      ethereum.Value.fromAddress(user),
+    ]);
 
     return result[0].toBigInt();
   }
 
-  try_userTokenAmount(
-    user: Address,
-    token: Address,
-  ): ethereum.CallResult<BigInt> {
+  try_userDeposit(user: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "userTokenAmount",
-      "userTokenAmount(address,address):(uint256)",
-      [ethereum.Value.fromAddress(user), ethereum.Value.fromAddress(token)],
+      "userDeposit",
+      "userDeposit(address):(uint256)",
+      [ethereum.Value.fromAddress(user)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -940,14 +1149,16 @@ export class XStakingPool extends ethereum.SmartContract {
   }
 
   withdraw(
+    depositToken: Address,
     amountLP: BigInt,
     oneInchSwapData: Array<Bytes>,
     useXBR: boolean,
   ): BigInt {
     let result = super.call(
       "withdraw",
-      "withdraw(uint256,bytes[],bool):(uint256)",
+      "withdraw(address,uint256,bytes[],bool):(uint256)",
       [
+        ethereum.Value.fromAddress(depositToken),
         ethereum.Value.fromUnsignedBigInt(amountLP),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
@@ -958,14 +1169,16 @@ export class XStakingPool extends ethereum.SmartContract {
   }
 
   try_withdraw(
+    depositToken: Address,
     amountLP: BigInt,
     oneInchSwapData: Array<Bytes>,
     useXBR: boolean,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "withdraw",
-      "withdraw(uint256,bytes[],bool):(uint256)",
+      "withdraw(address,uint256,bytes[],bool):(uint256)",
       [
+        ethereum.Value.fromAddress(depositToken),
         ethereum.Value.fromUnsignedBigInt(amountLP),
         ethereum.Value.fromBytesArray(oneInchSwapData),
         ethereum.Value.fromBoolean(useXBR),
@@ -1083,16 +1296,20 @@ export class DepositCall__Inputs {
     this._call = call;
   }
 
-  get baseTokenAmount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+  get depositToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get depositTokenAmount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
   }
 
   get oneInchSwapData(): Array<Bytes> {
-    return this._call.inputValues[1].value.toBytesArray();
+    return this._call.inputValues[2].value.toBytesArray();
   }
 
   get useXBR(): boolean {
-    return this._call.inputValues[2].value.toBoolean();
+    return this._call.inputValues[3].value.toBoolean();
   }
 }
 
@@ -1125,20 +1342,24 @@ export class DepositToCall__Inputs {
     this._call = call;
   }
 
-  get to(): Address {
+  get depositToken(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get baseTokenAmount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+  get to(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get depositTokenAmount(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get oneInchSwapData(): Array<Bytes> {
-    return this._call.inputValues[2].value.toBytesArray();
+    return this._call.inputValues[3].value.toBytesArray();
   }
 
   get useXBR(): boolean {
-    return this._call.inputValues[3].value.toBoolean();
+    return this._call.inputValues[4].value.toBoolean();
   }
 }
 
@@ -1179,24 +1400,28 @@ export class InitializeCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
+  get _capitalizationCap(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
   get _tokens(): Array<Address> {
-    return this._call.inputValues[2].value.toAddressArray();
+    return this._call.inputValues[3].value.toAddressArray();
   }
 
   get _allocations(): Array<BigInt> {
-    return this._call.inputValues[3].value.toBigIntArray();
+    return this._call.inputValues[4].value.toBigIntArray();
   }
 
   get _profitSharingFeeNumerator(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt();
   }
 
   get _tokensAmounts(): Array<BigInt> {
-    return this._call.inputValues[5].value.toBigIntArray();
+    return this._call.inputValues[6].value.toBigIntArray();
   }
 
-  get initialBaseTokenAmount(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
+  get initialDepositTokenAmount(): BigInt {
+    return this._call.inputValues[7].value.toBigInt();
   }
 }
 
@@ -1230,6 +1455,66 @@ export class RenounceOwnershipCall__Outputs {
   _call: RenounceOwnershipCall;
 
   constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class SetCapitalizationCapCall extends ethereum.Call {
+  get inputs(): SetCapitalizationCapCall__Inputs {
+    return new SetCapitalizationCapCall__Inputs(this);
+  }
+
+  get outputs(): SetCapitalizationCapCall__Outputs {
+    return new SetCapitalizationCapCall__Outputs(this);
+  }
+}
+
+export class SetCapitalizationCapCall__Inputs {
+  _call: SetCapitalizationCapCall;
+
+  constructor(call: SetCapitalizationCapCall) {
+    this._call = call;
+  }
+
+  get _capitalizationCap(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetCapitalizationCapCall__Outputs {
+  _call: SetCapitalizationCapCall;
+
+  constructor(call: SetCapitalizationCapCall) {
+    this._call = call;
+  }
+}
+
+export class SetPausedDepositCall extends ethereum.Call {
+  get inputs(): SetPausedDepositCall__Inputs {
+    return new SetPausedDepositCall__Inputs(this);
+  }
+
+  get outputs(): SetPausedDepositCall__Outputs {
+    return new SetPausedDepositCall__Outputs(this);
+  }
+}
+
+export class SetPausedDepositCall__Inputs {
+  _call: SetPausedDepositCall;
+
+  constructor(call: SetPausedDepositCall) {
+    this._call = call;
+  }
+
+  get _depositPaused(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
+  }
+}
+
+export class SetPausedDepositCall__Outputs {
+  _call: SetPausedDepositCall;
+
+  constructor(call: SetPausedDepositCall) {
     this._call = call;
   }
 }
@@ -1391,16 +1676,20 @@ export class WithdrawCall__Inputs {
     this._call = call;
   }
 
+  get depositToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
   get amountLP(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 
   get oneInchSwapData(): Array<Bytes> {
-    return this._call.inputValues[1].value.toBytesArray();
+    return this._call.inputValues[2].value.toBytesArray();
   }
 
   get useXBR(): boolean {
-    return this._call.inputValues[2].value.toBoolean();
+    return this._call.inputValues[3].value.toBoolean();
   }
 }
 

@@ -185,19 +185,6 @@
   },
   {
     "inputs": [],
-    "name": "baseToken",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "beacon",
     "outputs": [
       {
@@ -223,11 +210,11 @@
       },
       {
         "internalType": "uint256",
-        "name": "baseTokenAmount",
+        "name": "initialDepositTokenAmount",
         "type": "uint256"
       }
     ],
-    "name": "calcBaseTokenAllocationForDeployPool",
+    "name": "calcDepositTokenAmountAllocationForDeployPool",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -246,6 +233,16 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "capitalizationCap",
+        "type": "uint256"
+      },
+      {
         "internalType": "address[]",
         "name": "tokens",
         "type": "address[]"
@@ -262,7 +259,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "initialBaseTokenAmount",
+        "name": "initialDepositTokenAmount",
         "type": "uint256"
       },
       {
@@ -274,6 +271,11 @@
         "internalType": "string",
         "name": "description",
         "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "useXBR",
+        "type": "bool"
       }
     ],
     "name": "deployPool",
@@ -288,14 +290,34 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getBaseTokenAndOneInchRouter",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "depositToken",
         "type": "address"
-      },
+      }
+    ],
+    "name": "depositTokenIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositTokens",
+    "outputs": [
       {
         "internalType": "address",
         "name": "",
@@ -326,13 +348,46 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "baseTokenAmount",
+        "name": "initialDepositTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "useXBR",
+        "type": "bool"
+      }
+    ],
+    "name": "getTotalDepositTokenAmountForDeployPool",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "depositTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "xbrAmount",
         "type": "uint256"
       }
     ],
-    "name": "getTotalBaseTokenForDeployPool",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getUnstakingFee",
     "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
       {
         "internalType": "uint256",
         "name": "",
@@ -343,8 +398,32 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "depositTokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "getXBRAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "xbrAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "getUnstakingFee",
+    "name": "getXBRDiscount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -419,7 +498,27 @@
       },
       {
         "internalType": "address",
-        "name": "_baseToken",
+        "name": "_treasuryWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_xbr",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_depositTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_xbrUniswapV3Pools",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_uniswapV3SwapRouter",
         "type": "address"
       },
       {
@@ -441,11 +540,35 @@
         "internalType": "uint256",
         "name": "_unstakingFeeNumerator",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_xbrDiscountNumerator",
+        "type": "uint256"
       }
     ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "isDepositToken",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -536,6 +659,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_treasuryWallet",
+        "type": "address"
+      }
+    ],
+    "name": "setTreasuryWallet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_unstakingFeeNumerator",
         "type": "uint256"
@@ -549,12 +685,30 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_xbrDiscountNumerator",
+        "type": "uint256"
+      }
+    ],
+    "name": "setXBRDiscountNumerator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
-        "name": "_xbrToken",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "uniswapV3Pool",
         "type": "address"
       }
     ],
-    "name": "setXBRToken",
+    "name": "setXbrUniswapV3Pool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -589,6 +743,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "to",
         "type": "address"
       },
@@ -598,7 +757,7 @@
         "type": "uint256"
       }
     ],
-    "name": "transferBaseToken",
+    "name": "transferDepositToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -614,6 +773,32 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasuryWallet",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "uniswapV3SwapRouter",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -644,7 +829,58 @@
   },
   {
     "inputs": [],
-    "name": "xbrToken",
+    "name": "xbr",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "xbrDiscountNumerator",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      }
+    ],
+    "name": "xbrUniswapV3Pool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "xbrUniswapV3Pools",
     "outputs": [
       {
         "internalType": "address",
