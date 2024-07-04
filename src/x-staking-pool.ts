@@ -1,5 +1,5 @@
 import { Address, BigDecimal, BigInt, Bytes, bigDecimal, log } from '@graphprotocol/graph-ts'
-import { Deposit, Depositor, PoolAmount, TokenInfo, TokenPrice, Withdraw, XStakingPool, PoolCapitalization } from '../generated/schema'
+import { Deposit, Depositor, Withdrawer, PoolAmount, TokenInfo, TokenPrice, Withdraw, XStakingPool, PoolCapitalization } from '../generated/schema'
 import {
     IToken
 } from '../generated/templates/XStakingPool/IToken'
@@ -114,13 +114,13 @@ export function handleWithdraw(event: WithdrawEvent): void {
     withdraw.timestamp = event.block.timestamp
     withdraw.save()
 
-    let depositorId = event.address.toHexString() + '-' + event.params.depositor.toHexString() + '-' + event.block.timestamp.toString()
-    let depositorEntity = new Depositor(depositorId)
-    depositorEntity.timestamp = event.block.timestamp
-    depositorEntity.depositor = event.params.depositor
-    depositorEntity.pool = event.address
-    depositorEntity.amounts = event.params.userTokenAmounts
-    depositorEntity.save()
+    let withdrawerId = event.address.toHexString() + '-' + event.params.depositor.toHexString() + '-' + event.block.timestamp.toString()
+    let withdrawerEntity = new Withdrawer(withdrawerId)
+    withdrawerEntity.timestamp = event.block.timestamp
+    withdrawerEntity.withdrawer = event.params.depositor
+    withdrawerEntity.pool = event.address
+    withdrawerEntity.amounts = event.params.userTokenAmounts
+    withdrawerEntity.save()
 }
 
 export function handlePoolCapitalization(event: PoolCapitalizationEvent): void {

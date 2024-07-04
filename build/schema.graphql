@@ -41,6 +41,14 @@ type Depositor @entity {
   amounts: [BigInt!]!
 }
 
+type Withdrawer @entity {
+  id: ID!
+  timestamp: BigInt!
+  withdrawer: Bytes!
+  pool: Bytes!
+  amounts: [BigInt!]!
+}
+
 type Deposit @entity {
   id: ID!
   depositor: Bytes!

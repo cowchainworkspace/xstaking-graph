@@ -6,9 +6,9 @@ dataSources:
     name: XStakingFactory
     network: matic
     source:
-      address: '0x2B3450929D4e9500BCF45eaD1C07c51d63982018'
+      address: '0x7807d4084C1e5AB68807945A3D11f6544611268B'
       abi: XStakingFactory
-      startBlock: 55211512
+      startBlock: 58611490
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

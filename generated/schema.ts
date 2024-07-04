@@ -512,6 +512,98 @@ export class Depositor extends Entity {
   }
 }
 
+export class Withdrawer extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Withdrawer entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Withdrawer must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("Withdrawer", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): Withdrawer | null {
+    return changetype<Withdrawer | null>(store.get_in_block("Withdrawer", id));
+  }
+
+  static load(id: string): Withdrawer | null {
+    return changetype<Withdrawer | null>(store.get("Withdrawer", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get withdrawer(): Bytes {
+    let value = this.get("withdrawer");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set withdrawer(value: Bytes) {
+    this.set("withdrawer", Value.fromBytes(value));
+  }
+
+  get pool(): Bytes {
+    let value = this.get("pool");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set pool(value: Bytes) {
+    this.set("pool", Value.fromBytes(value));
+  }
+
+  get amounts(): Array<BigInt> {
+    let value = this.get("amounts");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set amounts(value: Array<BigInt>) {
+    this.set("amounts", Value.fromBigIntArray(value));
+  }
+}
+
 export class Deposit extends Entity {
   constructor(id: string) {
     super();
