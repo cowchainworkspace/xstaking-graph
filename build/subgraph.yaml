@@ -6,7 +6,7 @@ dataSources:
     name: XStakingFactory
     network: matic
     source:
-      address: "0x7807d4084C1e5AB68807945A3D11f6544611268B"
+      address: "0xE79128bF9430808176e0bb8d3cAa226EF0d51BEa"
       abi: XStakingFactory
       startBlock: 58611490
     mapping:
