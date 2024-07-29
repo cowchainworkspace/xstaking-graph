@@ -1,5 +1,5 @@
-type XStakingPool @entity {
-  id: ID!
+type XStakingPool @entity(immutable: true) {
+  id: Bytes!
   poolAddress: Bytes! # address
   poolDeployer: Bytes! # address 
   description: String! #uint8
@@ -9,64 +9,64 @@ type XStakingPool @entity {
   volume: BigDecimal!
 }
 
-type PoolAmount @entity {
-  id: ID!
+type PoolAmount @entity(immutable: true) {
+  id: Bytes!
   poolAddress: Bytes!
   timestamp: BigInt!
   tokens: [Bytes!]! # address[]
   tokenAmounts: [BigInt!]! # uint256[]
 }
 
-type TokenInfo @entity {
-  id: ID!
+type TokenInfo @entity(immutable: true) {
+  id: Bytes!
   tokenAddress: Bytes! # address
   tokenName: String! # string
   tokenSymbol: String! # string
   tokenDecimals: String! #uint8
 }
 
-type TokenPrice @entity {
-  id: ID!
+type TokenPrice @entity(immutable: true) {
+  id: Bytes!
   poolAddress: Bytes!
   tokenAddress: Bytes!
   tokenPrice: BigDecimal!
   timestamp: BigInt!
 }
 
-type Depositor @entity {
-  id: ID!
+type Depositor @entity(immutable: true) {
+  id: Bytes!
   timestamp: BigInt!
   depositor: Bytes!
   pool: Bytes!
   amounts: [BigInt!]!
 }
 
-type Withdrawer @entity {
-  id: ID!
+type Withdrawer @entity(immutable: true) {
+  id: Bytes!
   timestamp: BigInt!
   withdrawer: Bytes!
   pool: Bytes!
   amounts: [BigInt!]!
 }
 
-type Deposit @entity {
-  id: ID!
+type Deposit @entity(immutable: true) {
+  id: Bytes!
   depositor: Bytes!
   pool: Bytes!
   amount: BigDecimal!
   timestamp: BigInt!
 }
 
-type Withdraw @entity {
-  id: ID!
+type Withdraw @entity(immutable: true) {
+  id: Bytes!
   depositor: Bytes!
   pool: Bytes!
   amount: BigDecimal!
   timestamp: BigInt!
 }
 
-type PoolCapitalization @entity {
-  id: ID!
+type PoolCapitalization @entity(immutable: true) {
+  id: Bytes!
   pool: Bytes!
   timestamp: BigInt!
   capitalization: BigDecimal!
