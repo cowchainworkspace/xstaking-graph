@@ -16,7 +16,8 @@ import {
 
 export function handleTokensAmounts(event: TokensAmountsEvent): void {
     const id = event.address.toHexString() + '-' + event.block.timestamp.toString()
-    let poolAmountEntity = new PoolAmount(id)
+
+    let poolAmountEntity = new PoolAmount(Bytes.fromHexString(id))
     poolAmountEntity.poolAddress = event.address
     poolAmountEntity.timestamp = event.block.timestamp
     poolAmountEntity.tokens = event.params.tokens.map<Bytes>(token => token)
@@ -27,10 +28,10 @@ export function handleTokensAmounts(event: TokensAmountsEvent): void {
 export function handleTokenSwap(event: TokenSwapEvent): void {
     // token info id = address of pool + token address
     const tokenInfoId = event.address.toHexString() + "-" + event.params.token.toHexString()
-    let tokenInfoEntity = TokenInfo.load(tokenInfoId)
+    let tokenInfoEntity = TokenInfo.load(Bytes.fromHexString(tokenInfoId))
 
     if (!tokenInfoEntity) {
-        tokenInfoEntity = new TokenInfo(tokenInfoId)
+        tokenInfoEntity = new TokenInfo(Bytes.fromHexString(tokenInfoId))
 
         tokenInfoEntity.tokenAddress = event.params.token
 
@@ -70,7 +71,7 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
     const rawPrice: BigDecimal = baseTokenAmountBD.div(tokenAmountBD)
 
     let tokenPriceId = event.params.token.toHexString() + '-' + event.block.timestamp.toString()
-    let tokenPriceEntity = new TokenPrice(tokenPriceId)
+    let tokenPriceEntity = new TokenPrice(Bytes.fromHexString(tokenPriceId))
     tokenPriceEntity.poolAddress = event.address
     tokenPriceEntity.tokenAddress = event.params.token
     tokenPriceEntity.tokenPrice = rawPrice
@@ -79,7 +80,9 @@ export function handleTokenSwap(event: TokenSwapEvent): void {
 }
 
 export function handleVolume(event: VolumeEvent): void {
-    let pool = XStakingPool.load(event.address.toHexString())
+	const id = Bytes.fromHexString(event.address.toHexString())
+
+    let pool = XStakingPool.load(id)
 
     if (pool) {
         const volumeAmount = new BigDecimal(event.params.amount)
@@ -90,7 +93,9 @@ export function handleVolume(event: VolumeEvent): void {
 }
 
 export function handleDeposit(event: DepositEvent): void {
-    let deposit = new Deposit(event.transaction.hash.toHexString())
+    const id = Bytes.fromHexString(event.transaction.hash.toHexString())
+
+    let deposit = new Deposit(id)
     deposit.pool = event.params.pool
     deposit.depositor = event.params.depositor
     deposit.amount = new BigDecimal(event.params.amount)
@@ -98,7 +103,7 @@ export function handleDeposit(event: DepositEvent): void {
     deposit.save()
 
     let depositorId = event.address.toHexString() + '-' + event.params.depositor.toHexString() + '-' + event.block.timestamp.toString()
-    let depositorEntity = new Depositor(depositorId)
+    let depositorEntity = new Depositor(Bytes.fromHexString(depositorId))
     depositorEntity.timestamp = event.block.timestamp
     depositorEntity.depositor = event.params.depositor
     depositorEntity.pool = event.address
@@ -107,7 +112,9 @@ export function handleDeposit(event: DepositEvent): void {
 }
 
 export function handleWithdraw(event: WithdrawEvent): void {
-    let withdraw = new Withdraw(event.transaction.hash.toHexString())
+    const id = Bytes.fromHexString(event.transaction.hash.toHexString())
+
+    let withdraw = new Withdraw(id)
     withdraw.pool = event.params.pool
     withdraw.depositor = event.params.depositor
     withdraw.amount = new BigDecimal(event.params.amount)
@@ -115,7 +122,7 @@ export function handleWithdraw(event: WithdrawEvent): void {
     withdraw.save()
 
     let withdrawerId = event.address.toHexString() + '-' + event.params.depositor.toHexString() + '-' + event.block.timestamp.toString()
-    let withdrawerEntity = new Withdrawer(withdrawerId)
+    let withdrawerEntity = new Withdrawer(Bytes.fromHexString(withdrawerId))
     withdrawerEntity.timestamp = event.block.timestamp
     withdrawerEntity.withdrawer = event.params.depositor
     withdrawerEntity.pool = event.address
@@ -124,8 +131,9 @@ export function handleWithdraw(event: WithdrawEvent): void {
 }
 
 export function handlePoolCapitalization(event: PoolCapitalizationEvent): void {
-    const poolCapitalizationId = event.params.pool.toHexString() + "-" + event.block.timestamp.toString() 
-    let entity = new PoolCapitalization(poolCapitalizationId)
+    const poolCapitalizationId = event.params.pool.toHexString() + "-" + event.block.timestamp.toString()
+    const id = Bytes.fromHexString(poolCapitalizationId)
+    let entity = new PoolCapitalization(id)
     entity.pool = event.params.pool
     entity.timestamp = event.block.timestamp
     let capitalizationRaw = new BigDecimal(event.params.capitalization)

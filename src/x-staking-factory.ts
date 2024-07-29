@@ -4,7 +4,7 @@ import {XStakingPool} from '../generated/schema'
 import {XStakingPool as XStakingPoolTemplate} from '../generated/templates'
 
 export function handleDeployPool(event: DeployPoolEvent): void {
-  let entity = new XStakingPool(event.params.pool.toHexString())
+  let entity = new XStakingPool(Bytes.fromHexString(event.params.pool.toHexString()))
   entity.poolAddress = event.params.pool
   entity.poolDeployer = event.params.deployer
   entity.poolId = event.params.poolId
