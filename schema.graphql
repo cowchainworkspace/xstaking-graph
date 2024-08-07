@@ -1,4 +1,4 @@
-type XStakingPool @entity(immutable: true) {
+type XStakingPool @entity {
   id: Bytes!
   poolAddress: Bytes! # address
   poolDeployer: Bytes! # address 
